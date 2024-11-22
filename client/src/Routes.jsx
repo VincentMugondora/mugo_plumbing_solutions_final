@@ -24,7 +24,7 @@ import Dashboard from './pages/Dashboard';
 const AppRoutes = () => {
   return (
     <div className="poppins-regular">
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/plumbers" element={<Plumbers />} />

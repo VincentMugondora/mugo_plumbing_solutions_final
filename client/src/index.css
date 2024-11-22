@@ -193,3 +193,7 @@ a:hover {
   text-decoration: none !important;
 }
 
+body.menu-open {
+  overflow: hidden;
+}
+
