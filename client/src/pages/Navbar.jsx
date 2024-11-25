@@ -6,7 +6,6 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [dropdownTimer, setDropdownTimer] = useState(null);
 
   const handleLogout = () => {
     logout();
@@ -17,24 +16,25 @@ const Navbar = () => {
     document.body.classList.toggle('menu-open');
   };
 
-  const handleDropdownEnter = (dropdownName) => {
-    clearTimeout(dropdownTimer);
-    setActiveDropdown(dropdownName);
+  const toggleDropdown = (dropdownName) => {
+    setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
   };
 
-  const handleDropdownLeave = (dropdownName) => {
-    const timer = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 1000);
-    setDropdownTimer(timer);
-  };
-
-  // Cleanup timer on unmount
   useEffect(() => {
-    return () => {
-      if (dropdownTimer) clearTimeout(dropdownTimer);
+    const handleClickOutside = (event) => {
+      const isDropdownClick = event.target.closest('.dropdown');
+      const isDropdownButtonClick = event.target.closest('.dropdown-button');
+      
+      if (!isDropdownClick && !isDropdownButtonClick) {
+        setActiveDropdown(null);
+      }
     };
-  }, [dropdownTimer]);
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-white shadow-lg fixed w-full z-50">
@@ -50,133 +50,162 @@ const Navbar = () => {
 
             {/* Navigation Links - Centered */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/"
-                className="text-black hover:text-blue-600 transition-colors"
-              >
+              <Link to="/" className="text-black hover:text-blue-600 transition-colors">
                 Home
               </Link>
-              <div className="relative">
-                <Link
-                  to="/services"
-                  className="text-black hover:text-blue-600 transition-colors"
-                  onMouseEnter={() => handleDropdownEnter("services")}
-                  onMouseLeave={() => handleDropdownLeave("services")}
+
+              {/* Services Dropdown */}
+              <div className="relative dropdown">
+                <button
+                  onClick={() => toggleDropdown('services')}
+                  className="text-black hover:text-blue-600 transition-colors flex items-center cursor-pointer py-4 dropdown-button"
                 >
                   Services
-                </Link>
-                <div
-                  className={`absolute left-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl z-[60] ${
-                    activeDropdown === "services" ? "block" : "hidden"
-                  }`}
-                >
-                  <Link
-                    to="/services/residential"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  <svg
+                    className={`w-4 h-4 ml-1 transition-transform ${
+                      activeDropdown === 'services' ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Residential Plumbing
-                  </Link>
-                  <Link
-                    to="/services/commercial"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className={`absolute top-full left-0 w-48 bg-white rounded-md shadow-xl z-[60] py-2 transition-all duration-200 ease-in-out ${
+                  activeDropdown === 'services' ? 'block opacity-100 visible' : 'hidden opacity-0 invisible'
+                }`}>
+                  <Link 
+                    to="/services/plumbing" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Commercial Plumbing
+                    Plumbing Services
                   </Link>
-                  <Link
-                    to="/services/emergency"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  <Link 
+                    to="/services/heating" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Heating & Cooling
+                  </Link>
+                  <Link 
+                    to="/services/drain" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Drain Cleaning
+                  </Link>
+                  <Link 
+                    to="/services/water-heaters" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Water Heaters
+                  </Link>
+                  <Link 
+                    to="/services/emergency" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Emergency Services
                   </Link>
                 </div>
               </div>
-              <div className="relative">
-                <Link
-                  to="/pages"
-                  className="text-black hover:text-blue-600 transition-colors"
-                  onMouseEnter={() => handleDropdownEnter("pages")}
-                  onMouseLeave={() => handleDropdownLeave("pages")}
+
+              {/* Pages Dropdown */}
+              <div className="relative dropdown">
+                <button
+                  onClick={() => toggleDropdown('pages')}
+                  className="text-black hover:text-blue-600 transition-colors flex items-center cursor-pointer py-4 dropdown-button"
                 >
                   Pages
-                </Link>
-                <div
-                  className={`absolute left-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl z-[60] ${
-                    activeDropdown === "pages" ? "block" : "hidden"
-                  }`}
-                >
-                  <Link
-                    to="/blog"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  <svg
+                    className={`w-4 h-4 ml-1 transition-transform ${
+                      activeDropdown === 'pages' ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Blog
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className={`absolute top-full left-0 w-48 bg-white rounded-md shadow-xl z-[60] py-2 transition-all duration-200 ease-in-out ${
+                  activeDropdown === 'pages' ? 'block opacity-100 visible' : 'hidden opacity-0 invisible'
+                }`}>
+                  <Link 
+                    to="/about" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    About Us
                   </Link>
-                  <Link
-                    to="/testimonials"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  <Link 
+                    to="/team" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Our Team
+                  </Link>
+                  <Link 
+                    to="/careers" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Careers
+                  </Link>
+                  <Link 
+                    to="/faq" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    FAQ
+                  </Link>
+                  <Link 
+                    to="/pricing" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Pricing
+                  </Link>
+                  <Link 
+                    to="/testimonials" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Testimonials
                   </Link>
-                  <Link
-                    to="/book-appointment"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  <Link 
+                    to="/contact" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Book Appointment
+                    Contact
                   </Link>
                 </div>
               </div>
-              <Link
-                to="/plumbers"
-                className="text-black hover:text-blue-600 transition-colors"
-              >
-                Our Plumbers
+
+              <Link to="/blog" className="text-black hover:text-blue-600 transition-colors">
+                Blog
               </Link>
-              <Link
-                to="/contact"
-                className="text-black hover:text-blue-600 transition-colors"
-              >
-                Contact Us
+              <Link to="/contact" className="text-black hover:text-blue-600 transition-colors">
+                Contact
               </Link>
             </div>
 
             {/* Right side - Auth buttons */}
             <div className="hidden md:flex items-center space-x-4">
               {user ? (
-                <>
-                  {/* Profile Dropdown */}
-                  <div
-                    className="relative group"
-                    onMouseEnter={() => handleDropdownEnter("profile")}
-                    onMouseLeave={() => handleDropdownLeave("profile")}
-                  >
-                    <button className="flex items-center space-x-2 text-black hover:text-blue-600">
-                      <img
-                        src={user.avatar || "/default-avatar.png"}
-                        alt="Profile"
-                        className="w-8 h-8 rounded-full border border-gray-200"
-                      />
-                      <span>{user.name || "Profile"}</span>
-                    </button>
-                    <div
-                      className={`absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl z-[60] ${
-                        activeDropdown === "profile" ? "block" : "hidden"
-                      }`}
-                    >
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm hover:bg-gray-100"
-                      >
+                <div className="relative group">
+                  <button className="flex items-center space-x-2 text-black hover:text-blue-600 cursor-pointer py-4">
+                    <img
+                      src={user.avatar || "/default-avatar.png"}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border border-gray-200"
+                    />
+                    <span>{user.name || "Profile"}</span>
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className="absolute top-full right-0 w-48 bg-white rounded-md shadow-xl z-[60] transform opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out">
+                    <div className="py-2">
+                      <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">
                         My Profile
                       </Link>
-                      <Link
-                        to="/dashboard"
-                        className="block px-4 py-2 text-sm hover:bg-gray-100"
-                      >
+                      <Link to="/dashboard" className="block px-4 py-2 text-sm hover:bg-gray-100">
                         Dashboard
                       </Link>
-                      <Link
-                        to="/bookings"
-                        className="block px-4 py-2 text-sm hover:bg-gray-100"
-                      >
+                      <Link to="/bookings" className="block px-4 py-2 text-sm hover:bg-gray-100">
                         My Bookings
                       </Link>
                       <button
@@ -187,19 +216,13 @@ const Navbar = () => {
                       </button>
                     </div>
                   </div>
-                </>
+                </div>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    className="px-4 py-2 text-black hover:text-blue-600 transition-colors"
-                  >
+                  <Link to="/login" className="px-4 py-2 text-black hover:text-blue-600 transition-colors">
                     Login
                   </Link>
-                  <Link
-                    to="/register"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                  >
+                  <Link to="/register" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                     Create Account
                   </Link>
                 </>
@@ -333,58 +356,48 @@ const Navbar = () => {
             </Link>
             
             {/* Services Dropdown */}
-            <div className="space-y-1">
-              <button
-                onClick={() => setActiveDropdown(activeDropdown === "services" ? null : "services")}
+            <div className="relative">
+              <button 
+                onClick={() => toggleDropdown('services')}
                 className="flex items-center justify-between w-full py-2 px-4 text-sm text-black hover:bg-gray-100"
               >
                 <span>Services</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${activeDropdown === "services" ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'services' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className={`pl-4 space-y-1 ${activeDropdown === "services" ? "block" : "hidden"}`}>
-                <Link to="/services/residential" className="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">
+              <div className={`pl-4 space-y-1 ${activeDropdown === 'services' ? 'block' : 'hidden'}`}>
+                <Link to="/services/residential" className="block py-2 px-4 text-sm hover:bg-gray-100">
                   Residential Plumbing
                 </Link>
-                <Link to="/services/commercial" className="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">
+                <Link to="/services/commercial" className="block py-2 px-4 text-sm hover:bg-gray-100">
                   Commercial Plumbing
                 </Link>
-                <Link to="/services/emergency" className="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">
+                <Link to="/services/emergency" className="block py-2 px-4 text-sm hover:bg-gray-100">
                   Emergency Services
                 </Link>
               </div>
             </div>
 
             {/* Pages Dropdown */}
-            <div className="space-y-1">
-              <button
-                onClick={() => setActiveDropdown(activeDropdown === "pages" ? null : "pages")}
+            <div className="relative">
+              <button 
+                onClick={() => toggleDropdown('pages')}
                 className="flex items-center justify-between w-full py-2 px-4 text-sm text-black hover:bg-gray-100"
               >
                 <span>Pages</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${activeDropdown === "pages" ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'pages' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className={`pl-4 space-y-1 ${activeDropdown === "pages" ? "block" : "hidden"}`}>
-                <Link to="/blog" className="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">
+              <div className={`pl-4 space-y-1 ${activeDropdown === 'pages' ? 'block' : 'hidden'}`}>
+                <Link to="/blog" className="block py-2 px-4 text-sm hover:bg-gray-100">
                   Blog
                 </Link>
-                <Link to="/testimonials" className="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">
+                <Link to="/testimonials" className="block py-2 px-4 text-sm hover:bg-gray-100">
                   Testimonials
                 </Link>
-                <Link to="/book-appointment" className="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">
+                <Link to="/book-appointment" className="block py-2 px-4 text-sm hover:bg-gray-100">
                   Book Appointment
                 </Link>
               </div>
@@ -411,7 +424,6 @@ const Navbar = () => {
                 {/* Profile Dropdown */}
                 <div className="space-y-1">
                   <button
-                    onClick={() => setActiveDropdown(activeDropdown === "profile" ? null : "profile")}
                     className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-50"
                   >
                     <div className="flex items-center space-x-2">
@@ -426,7 +438,7 @@ const Navbar = () => {
                       <span>My Profile</span>
                     </div>
                     <svg
-                      className={`w-5 h-5 text-gray-400 transition-transform ${activeDropdown === "profile" ? "rotate-180" : ""}`}
+                      className="w-5 h-5 text-gray-400 transition-transform"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -434,7 +446,7 @@ const Navbar = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  <div className={`space-y-1 ${activeDropdown === "profile" ? "block" : "hidden"}`}>
+                  <div className="space-y-1">
                     <Link to="/profile" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
                       My Profile
                     </Link>
