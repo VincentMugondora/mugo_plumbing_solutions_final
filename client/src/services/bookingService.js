@@ -1,20 +1,20 @@
 import axios from 'axios';
 
-const API_URL = '/api/bookings';
+const BASE_URL = 'http://localhost:5000/api';
 
 export const bookingService = {
-  createBooking: async (bookingData) => {
-    const response = await axios.post(API_URL, bookingData);
-    return response.data;
-  },
-
-  getUserBookings: async () => {
-    const response = await axios.get(`${API_URL}/user`);
-    return response.data;
-  },
-
-  updateBookingStatus: async (bookingId, status) => {
-    const response = await axios.patch(`${API_URL}/status`, { bookingId, status });
-    return response.data;
+  getBookings: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${BASE_URL}/bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Detailed booking error:', error);
+      throw error;
+    }
   }
 }; 

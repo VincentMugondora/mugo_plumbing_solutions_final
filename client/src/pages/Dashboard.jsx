@@ -11,11 +11,15 @@ const Dashboard = () => {
     const fetchBookings = async () => {
       try {
         const response = await bookingService.getBookings();
-        console.log('Bookings response:', response); // Debug log
+        console.log('Bookings response:', response);
         setBookings(response.bookings || []);
       } catch (err) {
-        console.error('Error fetching bookings:', err); // Debug log
-        setError('Failed to fetch bookings');
+        console.error('Error details:', {
+          message: err.message,
+          response: err.response?.data,
+          status: err.response?.status
+        });
+        setError(err.response?.data?.message || 'Failed to fetch bookings');
       } finally {
         setLoading(false);
       }

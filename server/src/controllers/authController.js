@@ -2,6 +2,8 @@ const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 // Register user
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {

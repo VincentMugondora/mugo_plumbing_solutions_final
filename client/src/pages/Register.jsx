@@ -5,11 +5,12 @@ import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
+import axios from "axios";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { login } = useAuth();
 
   console.log('Auth Context:', useAuth());
 
@@ -38,15 +39,16 @@ const Register = () => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        const response = await api.post("/register", values);
+        const response = await axios.post('http://localhost:5000/api/auth/register', values);
         
-        if (response.data && response.data.user) {
-          setUser(response.data.user);
+        if (response.data.success) {
+          console.log('Registration successful:', response.data);
+          await login(values.email, values.password);
           toast.success("Registration successful");
           navigate("/dashboard");
           return;
         } else {
-          throw new Error("Invalid response format");
+          throw new Error(response.data.message || 'Registration failed');
         }
       } catch (error) {
         console.error('Registration error:', error);

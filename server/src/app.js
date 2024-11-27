@@ -1,58 +1,74 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const morgan = require("morgan");
-require("dotenv").config();
-const authRoute = require("./routes/authRoute");
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const authRoutes = require('./routes/authRoute');
+const bookingRoutes = require('./routes/bookingRoutes');
 
+// MongoDB Connection
+const connectDB = async () => {
+  try {
+    console.log('Attempting to connect to MongoDB...');
+    await mongoose.connect('mongodb://localhost:27017/your_database_name', {
+      serverSelectionTimeoutMS: 5000
+    });
+    console.log('✅ MongoDB Connected Successfully');
+  } catch (err) {
+    console.error('❌ MongoDB Connection Error:', err.message);
+    process.exit(1);
+  }
+};
+
+// Initialize Express app
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("hello developer");
-});
+// Connect to MongoDB before starting the server
+connectDB();
 
 // Middleware
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type", 
-      "Authorization",
-      "X-Requested-With",
-      "Accept"
-    ],
-    exposedHeaders: ["set-cookie"]
-  })
-);
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(morgan("dev"));
 
-// Database connection
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Could not connect to MongoDB:", err));
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
-// Routes
-app.use("/api/auth", authRoute);
+// Mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/bookings', bookingRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.message = err.message || "Internal Server Error";
+console.log('📝 Available routes:');
+console.log('- /api/bookings');
 
-  res.status(err.statusCode).json({
-    success: false,
-    message: err.message,
+// Add a catch-all route handler for debugging
+app.use('*', (req, res) => {
+  console.log('Route not found:', req.originalUrl);
+
+  console.log('Incoming request:', {
+    method: req.method,
+    url: req.url,
+    path: req.path,
+    body: req.body
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Error handling for 404
+app.use((req, res) => {
+  console.log('❌ Route not found:', req.method, req.url);
+  res.status(404).json({ message: 'Route not found' });
 });
+
+// Add a test route to verify server is running
+app.get('/test', (req, res) => {
+  res.json({ message: 'Server is running!' });
+});
+
+// Start the server
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Test the auth routes at http://localhost:${PORT}/api/auth/login`);
+});
+
+module.exports = app;

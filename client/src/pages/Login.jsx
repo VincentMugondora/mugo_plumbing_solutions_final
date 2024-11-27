@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,26 +23,26 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
-        credentials: "include",
+        body: JSON.stringify({ email: formData.email, password: formData.password }),
       });
 
       const data = await response.json();
-
+      
       if (response.ok) {
-        login(data.user);
-        navigate("/dashboard");
+        console.log('Login successful:', data);
+        await login(formData.email, formData.password);
+        navigate('/dashboard');
       } else {
-        setError(data.message || "Login failed");
+        throw new Error(data.message || 'Login failed');
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-      console.error("Login error:", err);
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Login failed');
     }
   };
 

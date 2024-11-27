@@ -7,9 +7,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen">
           <Navbar />
-          <main className="pt-16">
+          <main className="flex-1">
             <AppRoutes />
           </main>
         </div>

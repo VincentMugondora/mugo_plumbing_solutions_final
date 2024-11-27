@@ -1,14 +1,46 @@
 const mongoose = require('mongoose');
 
+const addressSchema = new mongoose.Schema({
+  street: {
+    type: String,
+    required: true
+  },
+  city: {
+    type: String,
+    required: true
+  },
+  postalCode: {
+    type: String,
+    required: true
+  }
+});
+
 const bookingSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  clientName: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  phone: {
+    type: String,
     required: true
   },
   serviceType: {
     type: String,
-    required: true
+    required: true,
+    enum: ['pipe_repair', 'drain_cleaning', 'water_heater', 'installation', 'leak_detection', 'emergency']
+  },
+  urgency: {
+    type: String,
+    required: true,
+    enum: ['low', 'medium', 'high']
+  },
+  description: {
+    type: String,
+    required: false
   },
   date: {
     type: Date,
@@ -18,20 +50,12 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  duration: {
-    type: Number, // in minutes
+  address: {
+    type: addressSchema,
     required: true
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
-    default: 'pending'
-  },
-  notes: String,
-  createdAt: {
-    type: Date,
-    default: Date.now
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Booking', bookingSchema); 

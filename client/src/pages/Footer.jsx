@@ -100,7 +100,7 @@ const Footer = () => {
             <div className="space-y-2">
               <li>
                 <a
-                  href="#"
+                  href="popular-services"
                   className="text-white poppins-regular no-underline hover:text-blue-400"
                 >
                   How it Works
@@ -108,7 +108,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="services"
                   className="text-white poppins-regular no-underline hover:text-blue-400"
                 >
                   Our Services
@@ -124,7 +124,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="blog"
                   className="text-white poppins-regular no-underline hover:text-blue-400"
                 >
                   Our Blog
@@ -132,7 +132,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="contact"
                   className="text-white poppins-regular no-underline hover:text-blue-400"
                 >
                   FAQ
@@ -182,7 +182,7 @@ const Footer = () => {
               <img src="/home/service.jpg" alt="Post" className="w-12 h-12" />
               <div>
                 <a
-                  href="#"
+                  href="/blog"
                   className="text-white no-underline text-sm leading-tight hover:text-blue-500"
                 >
                   Revitalising Your People In To a Retail Sown-turn.
