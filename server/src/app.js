@@ -10,10 +10,6 @@ const authRoutes = require("./routes/authRoute");
 const bookingRoutes = require("./routes/bookingRoutes");
 const userRoutes = require("./routes/userRoutes");
 
-app.get('/', (req, res) => {
-  res.send("Welcome To Mugo Plumbing Solutions");
-})
-
 // MongoDB Connection
 const connectDB = async () => {
   try {
@@ -28,6 +24,10 @@ const connectDB = async () => {
 
 // Initialize Express app
 const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Welcome To Mugo Plumbing Solutions");
+});
 
 // Connect to MongoDB before starting the server
 connectDB();
