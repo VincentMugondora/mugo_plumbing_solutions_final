@@ -46,4 +46,7 @@ userSchema.methods.getJWTToken = function() {
   });
 };
 
-module.exports = mongoose.model('User', userSchema); 
+// Check if the model already exists before defining it
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+module.exports = User; 

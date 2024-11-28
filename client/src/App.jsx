@@ -8,7 +8,7 @@ function App() {
     <Router>
       <AuthProvider>
         <div className="flex flex-col min-h-screen">
-          <Navbar />
+          {/* <Navbar /> */}
           <main className="flex-1">
             <AppRoutes />
           </main>

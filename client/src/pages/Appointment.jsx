@@ -3,6 +3,8 @@ import { AppContext } from "../context/AppContext";
 import { useEffect, useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import RelatedPlumbers from "../components/RelatedPlumbers";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Appointment = () => {
   const { plumberId } = useParams(); // Changed from docId to plumberId
@@ -13,6 +15,9 @@ const Appointment = () => {
   const [plumberSlots, setPlumberSlots] = useState([]); // Changed from docSlots to plumberSlots
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const fetchPlumberInfo = () => {
     // Find the plumber by ID
@@ -68,6 +73,57 @@ const Appointment = () => {
       }
 
       setPlumberSlots((prev) => [...prev, timeSlots]);
+    }
+  };
+
+  const handleBookAppointment = async () => {
+    if (!slotTime) {
+      alert('Please select a time slot');
+      return;
+    }
+
+    if (!user) {
+      alert('Please login to book an appointment');
+      navigate('/login');
+      return;
+    }
+
+    // Get the selected date from plumberSlots
+    const selectedDate = plumberSlots[slotIndex][0].datetime;
+    
+    const bookingData = {
+      plumberId: plumberInfo._id,
+      plumberName: plumberInfo.name,
+      appointmentDate: selectedDate.toISOString().split('T')[0],
+      appointmentTime: slotTime,
+      fees: plumberInfo.fees,
+      userId: user.uid,
+      userName: user.displayName || user.email,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      console.log('Sending booking data:', bookingData);
+      
+      // Make sure this URL matches your backend port (5000)
+      const response = await fetch('http://localhost:5000/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // Handle success
+    } catch (error) {
+      console.log('Booking error:', error);
+      // Handle error
     }
   };
 
@@ -165,7 +221,13 @@ const Appointment = () => {
           </div>
 
           {/* Book Appointment Button */}
-          <button className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6">
+          <button 
+            onClick={handleBookAppointment}
+            disabled={!slotTime}
+            className={`text-white text-sm font-light px-14 py-3 rounded-full my-6 ${
+              slotTime ? 'bg-primary hover:bg-primary/90' : 'bg-gray-400 cursor-not-allowed'
+            }`}
+          >
             Book an appointment
           </button>
         </div>

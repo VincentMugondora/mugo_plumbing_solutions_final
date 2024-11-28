@@ -20,11 +20,12 @@ import ServiceDetail from './components/services/ServiceDetail';
 import Book from './pages/Book';
 import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 
 const AppRoutes = () => {
   return (
     <div className="poppins-regular">
-      {/* <Navbar /> */}
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/plumbers" element={<Plumbers />} />
@@ -37,7 +38,7 @@ const AppRoutes = () => {
         <Route path="/services/:id" element={<ServiceDetail />} />
         <Route path="/testimonial" element={<Testimonial />} />
         <Route path="/blog" element={<Blog />} />
-        <Route path="/booking" element={<Booking />} />
+        <Route path="/bookings" element={<Booking />} />
         <Route path="/testimonials" element={<Testimonial />} />
         <Route path="/appointment/:plumberId" element={<Appointment />} />
         <Route path="/book" element={<Book />} />
@@ -46,6 +47,14 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <PrivateRoute>
+              <Profile />
             </PrivateRoute>
           } 
         />
