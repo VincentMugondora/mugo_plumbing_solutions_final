@@ -39,7 +39,10 @@ const Register = () => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        const response = await axios.post('http://localhost:5000/api/auth/register', values);
+        const response = await axios.post(
+          "https://mugo-plumbing-solutions-final.onrender.com/api/auth/register",
+          values
+        );
         
         if (response.data.success) {
           console.log('Registration successful:', response.data);
