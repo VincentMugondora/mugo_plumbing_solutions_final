@@ -1,7 +1,6 @@
 import ContactInfo from '../components/contact/ContactInfo'
 import ContactForm from '../components/contact/ContactForm'
-// import Hero from '../components/contact/Hero'
-import Map from '../components/contact/Map'
+import MapBackground from '../components/contact/MapBackGround'
 
 const Contact = () => {
   return (
@@ -9,7 +8,7 @@ const Contact = () => {
       {/* <Hero /> */}
       <ContactInfo />
       <ContactForm />
-      {/* <Map /> */}
+      <MapBackground />
     </div>
   )
 }

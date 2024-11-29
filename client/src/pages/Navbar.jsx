@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -153,6 +153,12 @@ const Navbar = () => {
                       onMouseEnter={() => handleMouseEnter("services")}
                       onMouseLeave={handleMouseLeave}
                     >
+                      <Link
+                        to="/services"
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 transition-colors duration-200"
+                      >
+                        All Services
+                      </Link>
                       <Link
                         to="/services/residential"
                         className="block px-4 py-2 text-sm hover:bg-gray-100 transition-colors duration-200"
