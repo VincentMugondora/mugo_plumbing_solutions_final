@@ -1,5 +1,10 @@
 import { useAuth } from "../context/AuthContext";
-import { FaUser, FaClipboardList, FaTools, FaChartLine } from "react-icons/fa";
+import {
+  FaClipboardList,
+  FaTools,
+  FaChartLine,
+  FaCheckCircle,
+} from "react-icons/fa";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -10,19 +15,19 @@ const Dashboard = () => {
       title: "Total Projects",
       value: "12",
       icon: FaClipboardList,
-      color: "from-blue-400 to-blue-600",
+      color: "bg-blue-500",
     },
     {
       title: "Pending Jobs",
       value: "4",
       icon: FaTools,
-      color: "from-yellow-400 to-yellow-600",
+      color: "bg-yellow-500",
     },
     {
       title: "Completed",
       value: "8",
       icon: FaChartLine,
-      color: "from-green-400 to-green-600",
+      color: "bg-green-500",
     },
   ];
 
@@ -71,14 +76,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800">
             Welcome back, {user?.name || "User"}!
           </h1>
-          <p className="text-gray-600 mt-2 text-lg">
+          <p className="text-gray-600 mt-1">
             Here's what's happening with your projects today.
           </p>
         </div>
@@ -105,32 +110,43 @@ const Dashboard = () => {
 
         {/* Bookings Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
             Upcoming Bookings
           </h2>
-          <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {bookings.map((booking) => (
               <div
                 key={booking.id}
-                className="p-4 border-b border-gray-200 flex items-center justify-between hover:bg-gray-50 transition"
+                className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow transform hover:scale-105 border border-gray-200"
               >
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-800">
                     {booking.service}
                   </h3>
-                  <p className="text-sm text-gray-600">
-                    {booking.date} at {booking.time}
-                  </p>
-                  <p className="text-sm text-gray-500">{booking.description}</p>
-                  <p className="text-sm text-gray-500">{booking.location}</p>
+                  <div
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                      booking.status
+                    )}`}
+                  >
+                    {booking.status.charAt(0).toUpperCase() +
+                      booking.status.slice(1)}
+                  </div>
                 </div>
-                <div
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                    booking.status
-                  )}`}
-                >
-                  {booking.status.charAt(0).toUpperCase() +
-                    booking.status.slice(1)}
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="font-semibold">Date:</span> {booking.date}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="font-semibold">Time:</span> {booking.time}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  <span className="font-semibold">Location:</span>{" "}
+                  {booking.location}
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
+                    <FaTools size={18} />
+                  </div>
+                  <p className="text-sm text-gray-600">{booking.description}</p>
                 </div>
               </div>
             ))}
