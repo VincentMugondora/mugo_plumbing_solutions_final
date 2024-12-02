@@ -3,45 +3,50 @@ import { AppContext } from "../context/AppContext";
 import { useEffect, useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import RelatedPlumbers from "../components/RelatedPlumbers";
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios"; // Import axios for API calls
 
 const Appointment = () => {
-  const { plumberId } = useParams(); // Changed from docId to plumberId
-  const { plumbers, currencySymbol } = useContext(AppContext);
+  const { plumberId } = useParams(); // Get plumberId from URL parameters
+  const { currencySymbol } = useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
-  const [plumberInfo, setPlumberInfo] = useState(null); // Changed from docInfo to plumberInfo
-  const [plumberSlots, setPlumberSlots] = useState([]); // Changed from docSlots to plumberSlots
+  const [plumberInfo, setPlumberInfo] = useState(null);
+  const [plumberSlots, setPlumberSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
-
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuth(); // Access logged-in user information
 
-  const fetchPlumberInfo = () => {
-    // Find the plumber by ID
-    const plumberInfo = plumbers.find((plumber) => plumber._id === plumberId);
-    setPlumberInfo(plumberInfo);
+  // Debug: Log the user object
+  console.log("Logged-in User:", user);
+
+  // Fetch plumber info by ID
+  const fetchPlumberInfo = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/plumbers/plumber/${plumberId}`
+      );
+      setPlumberInfo(response.data);
+      getAvailableSlots(); // Get slots only if plumber info is found
+    } catch (error) {
+      console.error("Error fetching plumber info:", error);
+      navigate("/plumbers"); // Redirect if plumber not found
+    }
   };
 
+  // Get available slots for booking
   const getAvailableSlots = () => {
     setPlumberSlots([]);
-
-    // Getting current date
     let today = new Date();
 
     for (let i = 0; i < 7; i++) {
-      // Getting date with the index
       let currentDate = new Date(today);
       currentDate.setDate(today.getDate() + i);
-
-      // Setting end time of the date with index
       let endTime = new Date();
       endTime.setDate(today.getDate() + i);
       endTime.setHours(21, 0, 0, 0);
 
-      // Setting hours
       if (today.getDate() === currentDate.getDate()) {
         currentDate.setHours(
           currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10
@@ -53,22 +58,16 @@ const Appointment = () => {
       }
 
       let timeSlots = [];
-
       while (currentDate < endTime) {
-        // Format the time with AM/PM
         let formattedTime = currentDate.toLocaleTimeString([], {
           hour: "numeric",
           minute: "2-digit",
-          hour12: true, // Enable AM/PM format
+          hour12: true,
         });
-
-        // Add slot to array
         timeSlots.push({
           datetime: new Date(currentDate),
           time: formattedTime,
         });
-
-        // Increment current time by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes() + 30);
       }
 
@@ -76,66 +75,59 @@ const Appointment = () => {
     }
   };
 
+  // Handle booking appointment
   const handleBookAppointment = async () => {
     if (!slotTime) {
-      alert('Please select a time slot');
+      alert("Please select a time slot");
       return;
     }
 
     if (!user) {
-      alert('Please login to book an appointment');
-      navigate('/login');
+      alert("Please login to book an appointment");
+      navigate("/login");
       return;
     }
 
-    // Get the selected date from plumberSlots
-    const selectedDate = plumberSlots[slotIndex][0].datetime;
-    
+    console.log("User ID:", user.uid || user._id); 
+    console.log("Logged-in User:", user);
+
+    const selectedDate = plumberSlots[slotIndex][0].datetime; // Get selected date from slots
     const bookingData = {
       plumberId: plumberInfo._id,
       plumberName: plumberInfo.name,
-      appointmentDate: selectedDate.toISOString().split('T')[0],
+      appointmentDate: selectedDate.toISOString().split("T")[0],
       appointmentTime: slotTime,
       fees: plumberInfo.fees,
-      userId: user.uid,
-      userName: user.displayName || user.email,
-      status: 'pending',
-      createdAt: new Date().toISOString()
+      user: user.uid || user,
+      userName: user.displayName || user,
+      status: "pending",
+      createdAt: new Date().toISOString(),
     };
 
     try {
-      console.log('Sending booking data:', bookingData);
-      
-      // Make sure this URL matches your backend port (5000)
-      const response = await fetch('http://localhost:5000/api/bookings', {
-        method: 'POST',
+      console.log("Sending booking data:", bookingData);
+
+      const response = await fetch("http://localhost:5000/api/bookings", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookingData)
+        body: JSON.stringify(bookingData),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      // Handle success
+      alert("Booking successful!");
     } catch (error) {
-      console.log('Booking error:', error);
-      // Handle error
+      console.log("Booking error:", error);
     }
   };
 
   useEffect(() => {
     fetchPlumberInfo();
-  }, [plumbers, plumberId]);
-
-  useEffect(() => {
-    if (plumberInfo) {
-      getAvailableSlots();
-    }
-  }, [plumberInfo]);
+  }, [plumberId]); // Only fetch when plumberId changes
 
   return (
     plumberInfo && (
@@ -150,7 +142,7 @@ const Appointment = () => {
             />
           </div>
           <div className="flex-1 border border-gray-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 mt-[-80px] sm:mt-0">
-            {/* -------- Plumber Info: name, speciality, experience -------- */}
+            {/* -------- Plumber Info -------- */}
             <p className="flex items-center gap-2 text-2xl font-medium text-gray-900">
               {plumberInfo.name}{" "}
               <img className="w-5" src={assets.verified_icon} alt="" />
@@ -160,7 +152,6 @@ const Appointment = () => {
                 {plumberInfo.speciality} - {plumberInfo.experience}
               </p>
             </div>
-
             {/* ------- Plumber About ------- */}
             <div>
               <p className="flex items-center gap-1 text-sm font-medium text-gray-900 mt-3">
@@ -173,8 +164,7 @@ const Appointment = () => {
             <p className="text-gray-500 font-medium mt-4">
               Appointment fee:{" "}
               <span className="text-gray-600">
-                {currencySymbol}
-                {plumberInfo.fees}
+                {currencySymbol} {plumberInfo.fees}
               </span>
             </p>
           </div>
@@ -188,7 +178,7 @@ const Appointment = () => {
               plumberSlots.map((item, index) => (
                 <div
                   onClick={() => setSlotIndex(index)}
-                  className={`text-center py-6 min-w-16 rounded-full cursor-pointer ${
+                  className={`text-center py-[15px] min-w-[100px] rounded-full cursor-pointer ${
                     slotIndex === index
                       ? "bg-primary text-white"
                       : "border border-gray-700"
@@ -202,13 +192,13 @@ const Appointment = () => {
           </div>
 
           {/* Display available times for the selected slot */}
-          <div className="flex items-center gap-3 w-full overflow-x-scroll mt-4">
+          <div className="flex items-center gap-3 w-full overflow-x-scroll mt-[15px]">
             {plumberSlots.length > 0 &&
               slotIndex < plumberSlots.length &&
               plumberSlots[slotIndex].map((item, index) => (
                 <p
                   onClick={() => setSlotTime(item.time)}
-                  className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${
+                  className={`text-sm font-light flex-shrink-0 px-[15px] py-[6px] rounded-full cursor-pointer ${
                     item.time === slotTime
                       ? "bg-primary text-white"
                       : "text-gray-400 border border-gray-300"
@@ -221,18 +211,20 @@ const Appointment = () => {
           </div>
 
           {/* Book Appointment Button */}
-          <button 
+          <button
             onClick={handleBookAppointment}
             disabled={!slotTime}
-            className={`text-white text-sm font-light px-14 py-3 rounded-full my-6 ${
-              slotTime ? 'bg-primary hover:bg-primary/90' : 'bg-gray-400 cursor-not-allowed'
+            className={`text-white text-sm font-light px-[30px] py-[10px] rounded-full my-[15px] ${
+              slotTime
+                ? "bg-primary hover:bg-primary/90"
+                : "bg-gray-400 cursor-notallowed"
             }`}
           >
             Book an appointment
           </button>
         </div>
 
-        {/* ------- Listing Related Doctors ------- */}
+        {/* ------- Listing Related Plumbers ------- */}
         <RelatedPlumbers plumberId={plumberId} city={plumberInfo.city} />
       </div>
     )

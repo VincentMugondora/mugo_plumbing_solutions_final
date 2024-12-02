@@ -8,7 +8,8 @@ dotenv.config();
 
 const authRoutes = require("./routes/authRoute");
 const bookingRoutes = require("./routes/bookingRoutes");
-const userRoutes = require("./routes/userRoutes");
+const userRoutes = require("./routes/userRoutes"); // Import user routes
+const plumberRoutes = require("./routes/plumberRoutes");
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -48,12 +49,8 @@ app.use((req, res, next) => {
 // Mount routes
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
-app.use("/api/users", userRoutes);
-
-console.log("📝 Available routes:");
-console.log("- /api/auth");
-console.log("- /api/bookings");
-console.log("- /api/users");
+app.use("/api/users", userRoutes); // Use user routes
+app.use("/api/plumbers", plumberRoutes);
 
 // Add a test route to verify server is running
 app.get("/test", (req, res) => {
@@ -78,9 +75,6 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(
-    `Test the auth routes at http://localhost:${PORT}/api/auth/login`
-  );
 });
 
 module.exports = app;

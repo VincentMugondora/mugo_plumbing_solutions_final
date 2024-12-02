@@ -1,22 +1,42 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
+import axios from "axios";
 
-const plumbers = () => {
+const Plumbers = () => {
   const { city } = useParams();
   const navigate = useNavigate();
-  const { plumbers } = useContext(AppContext);
-  const [filteredplumbers, setFilteredplumbers] = useState([]);
+  const [plumbers, setPlumbers] = useState([]);
+  const [filteredPlumbers, setFilteredPlumbers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Fetch all plumbers when the component mounts
+  useEffect(() => {
+    const fetchPlumbers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/plumbers"); 
+        setPlumbers(response.data);
+        setFilteredPlumbers(response.data);
+      } catch (err) {
+        console.error("Error fetching plumbers:", err);
+        setError("Failed to fetch plumbers");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlumbers();
+  }, []);
+
+  // Filter plumbers based on selected city when city changes
   useEffect(() => {
     if (city) {
-      setFilteredplumbers(
-        plumbers.filter(
-          (plumber) => plumber.city.toLowerCase() === city.toLowerCase()
-        )
+      const filtered = plumbers.filter(
+        (plumber) => plumber.city.toLowerCase() === city.toLowerCase()
       );
+      setFilteredPlumbers(filtered);
     } else {
-      setFilteredplumbers(plumbers);
+      setFilteredPlumbers(plumbers); // Reset to show all if no city is selected
     }
   }, [city, plumbers]);
 
@@ -25,6 +45,8 @@ const plumbers = () => {
       <p className="text-gray-600 text-center mt-4">
         Browse Through the plumbers available in your city.
       </p>
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-8">
         {/* City List */}
         <div className="flex flex-col gap-2 text-sm text-gray-600 self-start">
@@ -52,9 +74,9 @@ const plumbers = () => {
           ))}
         </div>
 
-        {/* plumber Cards */}
+        {/* Plumber Cards */}
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredplumbers.map((item) => (
+          {filteredPlumbers.map((item) => (
             <div
               onClick={() => navigate(`/appointment/${item._id}`)}
               className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-500"
@@ -81,4 +103,4 @@ const plumbers = () => {
   );
 };
 
-export default plumbers;
+export default Plumbers;
