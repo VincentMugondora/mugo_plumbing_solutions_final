@@ -1,13 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import {
-  FaUser,
-  FaClipboardList,
-  FaTools,
-  FaChartLine,
-  FaClock,
-  FaCheckCircle,
-  FaHourglassHalf,
-} from "react-icons/fa";
+import { FaUser, FaClipboardList, FaTools, FaChartLine } from "react-icons/fa";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -18,19 +10,19 @@ const Dashboard = () => {
       title: "Total Projects",
       value: "12",
       icon: FaClipboardList,
-      color: "bg-blue-500",
+      color: "from-blue-400 to-blue-600",
     },
     {
       title: "Pending Jobs",
       value: "4",
       icon: FaTools,
-      color: "bg-yellow-500",
+      color: "from-yellow-400 to-yellow-600",
     },
     {
       title: "Completed",
       value: "8",
       icon: FaChartLine,
-      color: "bg-green-500",
+      color: "from-green-400 to-green-600",
     },
   ];
 
@@ -79,41 +71,70 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 p-6">
       <div className="container mx-auto">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-4xl font-extrabold text-gray-800">
             Welcome back, {user?.name || "User"}!
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 mt-2 text-lg">
             Here's what's happening with your projects today.
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg shadow-md p-6 transition-transform duration-300 hover:transform hover:scale-105"
+              className={`rounded-xl p-6 bg-gradient-to-r ${stat.color} text-white shadow-lg transition-transform transform hover:scale-105`}
             >
               <div className="flex items-center justify-between mb-4">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white"
-                  style={{ backgroundColor: stat.color }}
-                >
-                  <stat.icon size={24} />
+                <div className="p-4 bg-white rounded-full shadow-md text-gray-700">
+                  <stat.icon size={32} />
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">{stat.title}</p>
-                  <p className="text-lg font-bold text-gray-800">
-                    {stat.value}
-                  </p>
+                  <p className="text-sm uppercase">{stat.title}</p>
+                  <p className="text-3xl font-bold">{stat.value}</p>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Bookings Section */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Upcoming Bookings
+          </h2>
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            {bookings.map((booking) => (
+              <div
+                key={booking.id}
+                className="p-4 border-b border-gray-200 flex items-center justify-between hover:bg-gray-50 transition"
+              >
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {booking.service}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {booking.date} at {booking.time}
+                  </p>
+                  <p className="text-sm text-gray-500">{booking.description}</p>
+                  <p className="text-sm text-gray-500">{booking.location}</p>
+                </div>
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                    booking.status
+                  )}`}
+                >
+                  {booking.status.charAt(0).toUpperCase() +
+                    booking.status.slice(1)}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
