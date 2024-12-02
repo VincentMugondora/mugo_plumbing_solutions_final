@@ -7,7 +7,7 @@ const TestimonialSection = () => {
   const videoRef = useRef(null);
 
   // Define the range of testimonials to be sliced (0–6)
-  const slicedTestimonials = testimonialsData.slice(0, 7);
+  const slicedTestimonials = testimonialsData.slice(0, 5);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
