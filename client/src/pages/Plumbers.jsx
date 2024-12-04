@@ -14,7 +14,7 @@ const Plumbers = () => {
   useEffect(() => {
     const fetchPlumbers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/plumbers"); 
+        const response = await axios.get("http://localhost:5000/api/plumbers");
         setPlumbers(response.data);
         setFilteredPlumbers(response.data);
       } catch (err) {
@@ -28,7 +28,6 @@ const Plumbers = () => {
     fetchPlumbers();
   }, []);
 
-  // Filter plumbers based on selected city when city changes
   useEffect(() => {
     if (city) {
       const filtered = plumbers.filter(
@@ -36,7 +35,7 @@ const Plumbers = () => {
       );
       setFilteredPlumbers(filtered);
     } else {
-      setFilteredPlumbers(plumbers); // Reset to show all if no city is selected
+      setFilteredPlumbers(plumbers);
     }
   }, [city, plumbers]);
 

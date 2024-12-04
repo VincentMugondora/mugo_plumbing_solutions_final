@@ -14,12 +14,14 @@ import Footer from "./pages/Footer";
 import NotFound from "./components/404/NotFound";
 import Plumbers from "./pages/Plumbers";
 import Appointment from "./pages/Appointment";
-import ServicesSection from './components/services/Hero';
+// import ServicesSection from './components/services/Hero';
 import ServiceDetail from './components/services/ServiceDetail';
 import Book from './pages/Book';
 import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import PLumberDashboard from "./pages/PLumberDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const AppRoutes = () => {
   return (
@@ -27,6 +29,8 @@ const AppRoutes = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/plumber-dashboard" element={<PLumberDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/plumbers" element={<Plumbers />} />
         <Route path="/plumbers/:city" element={<Plumbers />} />
         <Route path="/about" element={<About />} />

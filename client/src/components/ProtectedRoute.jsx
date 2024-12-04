@@ -1,20 +1,29 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import LoadingSpinner from './components/LoadingSpinner';
+// src/components/ProtectedRoute.js
+import React from "react";
+import { Route, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; 
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-  const location = useLocation();
+const ProtectedRoute = ({ component: Component, allowedRoles, ...rest }) => {
+  const { user } = useAuth(); 
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  const isAuthorized = () => {
+    if (!user) return false; 
+    if (!allowedRoles) return true; 
+    return allowedRoles.includes(user.role); 
+  };
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  return children;
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthorized() ? (
+          <Component {...props} />
+        ) : (
+          <Navigate to="/login" /> 
+        )
+      }
+    />
+  );
 };
 
 export default ProtectedRoute;

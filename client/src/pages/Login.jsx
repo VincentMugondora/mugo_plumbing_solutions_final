@@ -1,125 +1,105 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const navigate = useNavigate();
+const LoginForm = () => {
   const { login } = useAuth();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setError(null); // Reset error state
+
     try {
       const response = await axios.post(
-        "https://mugo-plumbing-solutions-final.onrender.com/api/auth/login",
-        formData
+        "http://localhost:5000/api/auth/login",
+        { email, password }
       );
-      if (response.status === 200) {
-        await login(formData.email, formData.password);
-        navigate("/dashboard");
+
+      // Destructure user and token from response
+      const { user, token } = response.data;
+
+      // Validate role for navigation
+      const userRole = user.role || "user";
+
+      // Log user and role for debugging
+      console.log("Login successful:", user);
+      console.log("User role:", userRole);
+
+      // Store user and token in AuthContext
+      login(user, token);
+
+      // Navigate based on role
+      switch (userRole) {
+        case "admin":
+          navigate("/admin-dashboard");
+          break;
+        case "plumber":
+          navigate("/plumber-dashboard");
+          break;
+        default:
+          navigate("/dashboard");
+          break;
       }
-    } catch (error) {
-      setError(error.response?.data?.message || "Login failed");
-      toast.error(error.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-400 to-blue-700 p-6 sm:p-12">
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg transform transition-all hover:shadow-2xl duration-300">
-        <h2 className="text-4xl font-extrabold text-gray-800 text-center mb-6">
-          Welcome Back
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-blue-800">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
+          Login
         </h2>
-        <p className="text-center text-gray-600 mb-6">
-          Please sign in to continue
-        </p>
-        {error && (
-          <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-            role="alert"
-          >
-            <span className="block sm:inline">{error}</span>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:border-blue-500 transition duration-200"
+            />
           </div>
-        )}
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="mb-6">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:border-blue-500 transition duration-200"
+            />
           </div>
-
           <button
             type="submit"
-            disabled={loading}
-            className={`w-full py-3 rounded-lg text-white text-sm font-medium bg-gradient-to-r from-blue-300 to-blue-600 hover:from-blue-700 hover:to-blue-300 focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-offset-2 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none transition duration-200"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            Login
           </button>
         </form>
-
-        <div className="mt-6 text-center">
-          <Link
-            to="/register"
-            className="text-sm font-medium text-purple-600 hover:underline"
+        <p className="mt-4 text-center text-blue-600">
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/signup")}
+            className="font-semibold cursor-pointer hover:text-blue-700"
           >
-            Don’t have an account? Register
-          </Link>
-        </div>
+            Sign up
+          </span>
+        </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default LoginForm;

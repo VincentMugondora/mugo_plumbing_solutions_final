@@ -5,10 +5,10 @@ import { assets } from "../assets/assets";
 import RelatedPlumbers from "../components/RelatedPlumbers";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios"; // Import axios for API calls
+import axios from "axios"; 
 
 const Appointment = () => {
-  const { plumberId } = useParams(); // Get plumberId from URL parameters
+  const { plumberId } = useParams();
   const { currencySymbol } = useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const [plumberInfo, setPlumberInfo] = useState(null);
@@ -16,7 +16,7 @@ const Appointment = () => {
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
   const navigate = useNavigate();
-  const { user } = useAuth(); // Access logged-in user information
+  const { user } = useAuth(); 
 
   // Debug: Log the user object
   console.log("Logged-in User:", user);
@@ -25,10 +25,10 @@ const Appointment = () => {
   const fetchPlumberInfo = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/plumbers/plumber/${plumberId}`
+        `http://localhost:5000/api/plumbers/id/${plumberId}`
       );
       setPlumberInfo(response.data);
-      getAvailableSlots(); // Get slots only if plumber info is found
+      getAvailableSlots(); 
     } catch (error) {
       console.error("Error fetching plumber info:", error);
       navigate("/plumbers"); // Redirect if plumber not found
@@ -88,13 +88,14 @@ const Appointment = () => {
       return;
     }
 
-    console.log("User ID:", user.uid || user._id); 
+    console.log("User ID:", user.uid || user._id);
     console.log("Logged-in User:", user);
 
     const selectedDate = plumberSlots[slotIndex][0].datetime; // Get selected date from slots
     const bookingData = {
       plumberId: plumberInfo._id,
       plumberName: plumberInfo.name,
+      plumberImage: plumberInfo.image,
       appointmentDate: selectedDate.toISOString().split("T")[0],
       appointmentTime: slotTime,
       fees: plumberInfo.fees,
@@ -127,18 +128,18 @@ const Appointment = () => {
 
   useEffect(() => {
     fetchPlumberInfo();
-  }, [plumberId]); // Only fetch when plumberId changes
+  }, [plumberId]);
 
   return (
     plumberInfo && (
-      <div className="container">
+      <div className="container mt-14">
         {/* ------- Plumber Details ------- */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="">
             <img
               className="bg-primary w-[40vw] object-left-top h-[40vh] object-cover sm:max-w-72 rounded-lg"
               src={plumberInfo.image}
-              alt={plumberInfo.name} // Use plumberInfo.name for alt text
+              alt={plumberInfo.name} 
             />
           </div>
           <div className="flex-1 border border-gray-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 mt-[-80px] sm:mt-0">
@@ -178,7 +179,7 @@ const Appointment = () => {
               plumberSlots.map((item, index) => (
                 <div
                   onClick={() => setSlotIndex(index)}
-                  className={`text-center py-[15px] min-w-[100px] rounded-full cursor-pointer ${
+                  className={`text-center flex flex-col items-center justify-center py-[15px] min-w-[65px] rounded-full cursor-pointer ${
                     slotIndex === index
                       ? "bg-primary text-white"
                       : "border border-gray-700"
