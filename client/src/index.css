@@ -197,3 +197,52 @@ body.menu-open {
   overflow: hidden;
 }
 
+/* Add this to your main CSS file */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.side-navbar {
+  width: 250px;
+  background-color: #2d3748;
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.side-navbar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.side-navbar li {
+  margin-bottom: 20px;
+}
+
+.side-navbar li a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+  transition: background-color 0.3s;
+}
+
+.side-navbar li a:hover {
+  background-color: #4a5568;
+}
+
+.content-area {
+  flex: 1;
+  padding: 20px;
+}
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard-layout .content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}

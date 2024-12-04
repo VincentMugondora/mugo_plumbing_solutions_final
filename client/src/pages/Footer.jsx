@@ -199,7 +199,7 @@ const Footer = () => {
         {/* Bottom Links */}
         <div className="mt-8 flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
           <p className="text-gray-500 text-sm text-center lg:text-left">
-            &copy; 2024 ThemeJunction. All Rights Reserved.
+            &copy; 2024 Mugo Plumbing Solutions. All Rights Reserved.
           </p>
           <div className="text-gray-400 flex space-x-4 text-sm">
             <a href="/settings" className="hover:text-blue-400">

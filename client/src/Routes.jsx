@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -14,23 +14,38 @@ import Footer from "./pages/Footer";
 import NotFound from "./components/404/NotFound";
 import Plumbers from "./pages/Plumbers";
 import Appointment from "./pages/Appointment";
-// import ServicesSection from './components/services/Hero';
-import ServiceDetail from './components/services/ServiceDetail';
-import Book from './pages/Book';
-import PrivateRoute from './components/PrivateRoute';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
+import ServiceDetail from "./components/services/ServiceDetail";
+import Book from "./pages/Book";
+import PrivateRoute from "./components/PrivateRoute";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import PLumberDashboard from "./pages/PLumberDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import DashboardLayout from "./components/DashboardLayout";
 
 const AppRoutes = () => {
+  const location = useLocation();
+
+  // Define the routes where Navbar and Footer should not be visible
+  const noNavbarRoutes = [
+    "/dashboard",
+    "/plumber-dashboard",
+    "/admin-dashboard",
+  ];
+  const noFooterRoutes = [
+    "/dashboard",
+    "/plumber-dashboard",
+    "/admin-dashboard",
+  ];
+
+  const hideNavbar = noNavbarRoutes.includes(location.pathname);
+  const hideFooter = noFooterRoutes.includes(location.pathname);
+
   return (
     <div className="poppins-regular">
-      <Navbar />
+      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/plumber-dashboard" element={<PLumberDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/plumbers" element={<Plumbers />} />
         <Route path="/plumbers/:city" element={<Plumbers />} />
         <Route path="/about" element={<About />} />
@@ -45,26 +60,50 @@ const AppRoutes = () => {
         <Route path="/testimonials" element={<Testimonial />} />
         <Route path="/appointment/:plumberId" element={<Appointment />} />
         <Route path="/book" element={<Book />} />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <PrivateRoute>
-              <Dashboard />
+              <DashboardLayout>
+                <Dashboard />
+              </DashboardLayout>
             </PrivateRoute>
-          } 
+          }
         />
-        <Route 
-          path="/profile" 
+        <Route
+          path="/plumber-dashboard"
           element={
             <PrivateRoute>
-              <Profile />
+              <DashboardLayout>
+                <PLumberDashboard />
+              </DashboardLayout>
             </PrivateRoute>
-          } 
+          }
+        />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <AdminDashboard />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <Profile />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
         />
         {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 };

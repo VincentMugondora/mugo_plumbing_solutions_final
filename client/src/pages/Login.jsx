@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const LoginForm = () => {
+const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -12,41 +12,24 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Reset error state
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
         { email, password }
       );
+      const { token, user } = response.data;
 
-      // Destructure user and token from response
-      const { user, token } = response.data;
-
-      // Validate role for navigation
-      const userRole = user.role || "user";
-
-      // Log user and role for debugging
-      console.log("Login successful:", user);
-      console.log("User role:", userRole);
-
-      // Store user and token in AuthContext
       login(user, token);
 
-      // Navigate based on role
-      switch (userRole) {
-        case "admin":
-          navigate("/admin-dashboard");
-          break;
-        case "plumber":
-          navigate("/plumber-dashboard");
-          break;
-        default:
-          navigate("/dashboard");
-          break;
+      // Redirect based on user role
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (user.role === "plumber") {
+        navigate("/plumber-dashboard");
+      } else {
+        navigate("/dashboard");
       }
     } catch (err) {
-      console.error("Login error:", err);
       setError(
         err.response?.data?.message || "Login failed. Please try again."
       );
@@ -88,18 +71,9 @@ const LoginForm = () => {
             Login
           </button>
         </form>
-        <p className="mt-4 text-center text-blue-600">
-          Don't have an account?{" "}
-          <span
-            onClick={() => navigate("/signup")}
-            className="font-semibold cursor-pointer hover:text-blue-700"
-          >
-            Sign up
-          </span>
-        </p>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default Login;
