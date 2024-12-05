@@ -1,0 +1,29 @@
+backend:
+    functions:
+        - entry: server/src/app.js
+          handler: handler
+          name: express
+          path: .
+          type: httpServer
+    language:
+        name: js
+    path: ./server/src/
+    scripts:
+        deploy:
+            - npm install
+        local:
+            - npm install
+frontend:
+    environment:
+        VITE_API_URL_EXPRESS: ${{ backend.functions.express.url }}
+    path: client
+    publish: dist
+    scripts:
+        build:
+            - npm run build
+        deploy:
+            - npm install
+    subdomain: gray-lesser-mosquito
+name: gray-lesser-mosquito
+region: us-east-1
+yamlVersion: 2
