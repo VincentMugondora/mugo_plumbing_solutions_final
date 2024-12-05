@@ -17,14 +17,17 @@ import Appointment from "./pages/Appointment";
 import ServiceDetail from "./components/services/ServiceDetail";
 import Book from "./pages/Book";
 import PrivateRoute from "./components/PrivateRoute";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import PLumberDashboard from "./pages/PLumberDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import DashboardLayout from "./components/DashboardLayout";
+import Dashboard from "./pages/Dashboard"; // Main dashboard component
+import PlumberDashboard from "./pages/PlumberDashboard"; // Plumber dashboard component
+import AdminDashboard from "./pages/AdminDashboard"; // Admin dashboard component
+import DashboardLayout from "./components/DashboardLayout"; // Layout for the dashboard
+import { useAuth } from "./context/AuthContext";
+import NotAuthorized from "./components/NotAuthorized";
 
 const AppRoutes = () => {
   const location = useLocation();
+  const { user } = useAuth();
+  console.log("User  from AuthContext:", user);
 
   // Define the routes where Navbar and Footer should not be visible
   const noNavbarRoutes = [
@@ -60,47 +63,36 @@ const AppRoutes = () => {
         <Route path="/testimonials" element={<Testimonial />} />
         <Route path="/appointment/:plumberId" element={<Appointment />} />
         <Route path="/book" element={<Book />} />
+        <Route path="/not-authorized" element={<NotAuthorized />} />
+
         <Route
           path="/dashboard"
           element={
             <PrivateRoute>
-              <DashboardLayout>
-                <Dashboard />
-              </DashboardLayout>
+              <DashboardLayout />
             </PrivateRoute>
           }
-        />
-        <Route
-          path="/plumber-dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardLayout>
-                <PLumberDashboard />
-              </DashboardLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin-dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardLayout>
+        >
+          <Route index element={<Dashboard />} />
+          <Route
+            path="/dashboard/admin-dashboard"
+            element={
+              <PrivateRoute requiredRole="admin">
                 <AdminDashboard />
-              </DashboardLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <PrivateRoute>
-              <DashboardLayout>
-                <Profile />
-              </DashboardLayout>
-            </PrivateRoute>
-          }
-        />
-        {/* Catch-all route for 404 */}
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard/plumber-dashboard"
+            element={
+              <PrivateRoute requiredRole="plumber">
+                <PlumberDashboard />
+              </PrivateRoute>
+            }
+          />
+        </Route>
+
+        {/* Catch-All Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!hideFooter && <Footer />}

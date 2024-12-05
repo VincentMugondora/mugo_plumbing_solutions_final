@@ -111,8 +111,8 @@
 }
 
 /* HEADER */
-.active hr{
-    @apply block
+.active hr {
+  @apply block;
 }
 
 /* HERO STYLES */
@@ -151,18 +151,17 @@
   line-height: 1.75rem;
 }
 
-
 /* LOGIN STYLES */
-.form-container{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+.form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
-.register-form{
-    border: 1px solid black;
-    padding: 30px;
-    border-radius: 3px;
+.register-form {
+  border: 1px solid black;
+  padding: 30px;
+  border-radius: 3px;
 }
 
 .glass-effect {
@@ -170,12 +169,12 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.active hr{
-    @apply block
+.active hr {
+  @apply block;
 }
 
-::-webkit-scrollbar{
-    @apply hidden;
+::-webkit-scrollbar {
+  @apply hidden;
 }
 
 /* Remove all link underlines */
@@ -197,52 +196,21 @@ body.menu-open {
   overflow: hidden;
 }
 
-/* Add this to your main CSS file */
-.dashboard-layout {
-  display: flex;
-  min-height: 100vh;
+/* App.css or a separate CSS file */
+header {
+  background-color: #207fbe;
+
+}
+nav {
+  transition: transform 0.3s ease-in-out;
 }
 
-.side-navbar {
-  width: 250px;
-  background-color: #2d3748;
-  color: white;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.side-navbar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.side-navbar li {
-  margin-bottom: 20px;
-}
-
-.side-navbar li a {
+nav a {
   color: white;
   text-decoration: none;
-  padding: 10px;
-  display: block;
-  transition: background-color 0.3s;
 }
 
-.side-navbar li a:hover {
-  background-color: #4a5568;
+nav a:hover {
+  background-color: #207fbe;
 }
 
-.content-area {
-  flex: 1;
-  padding: 20px;
-}
-.dashboard-layout {
-  display: flex;
-  height: 100vh;
-}
-
-.dashboard-layout .content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}

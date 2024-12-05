@@ -86,7 +86,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full sticky top-0 z-50">
-      <nav className="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-40">
+      <main className="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-20">
             {/* Logo */}
@@ -347,7 +347,7 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      </nav>
+      </main>
 
       {/* Mobile Menu - Move outside of nav */}
       <AnimatePresence>
